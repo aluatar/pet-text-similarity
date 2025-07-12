@@ -13,6 +13,7 @@ multiple_dots = r'\.{2,}'
 
 class Text:
     def __init__(self, text: str | None=None, path: str | None=None):
+        self.text_length = 0
         self.text = ""
         self.sentencies = []
         self.words = []
@@ -25,14 +26,18 @@ class Text:
     def text_from_string(self, text: str):
         self.text += '\n' + text
         self.sentencies.extend(self.split_into_sentences(text=text))
-        self.words.extend(self.split_into_words(text))
+        splitted = self.split_into_words(text)
+        self.words.extend(splitted)
+        self.text_length += len(splitted)
         
     def text_from_file(self, path: str):
         with open(path, 'r') as f:
             _text = str(f.read())
         self.text += '\n' + _text
         self.sentencies.extend(self.split_into_sentences(text=_text))
-        self.words.extend(self.split_into_words(text=_text))
+        splitted = self.split_into_words(text=_text)
+        self.words.extend(splitted)
+        self.text_length += len(splitted)
         
     
     def split_into_sentences(self, text: str) -> list[str]:
@@ -77,4 +82,5 @@ class Text:
     
     
     def split_into_words(self, text: str):
+        text = re.sub(r"[^a-zA-Z@#' ]", '', text) 
         return re.findall(r"\b[a-zA-Z]+(?:'[a-zA-Z]+)?\b", text)
