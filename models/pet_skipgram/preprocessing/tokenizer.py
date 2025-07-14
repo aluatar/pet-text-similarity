@@ -29,8 +29,8 @@ class PetTokenizer:
         
     def encode(self, text: list[str]) -> list[int]:
         _encoded = [
-            self.word_idx_dict[word] if word in self.vocabulary else -1
-            for word in text
+            self.word_idx_dict[word] for word in text
+            if word in self.vocabulary
         ]
         return _encoded
     

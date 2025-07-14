@@ -21,7 +21,7 @@ class PetSkipGramModel(nn.Module, PetTokenizer):
         self.temperature = temerature
         self.word_embedding_dict = {}
         
-    def forward(self, center_word_idx) -> torch.Tensor:
+    def forward(self, center_word_idx):
         onehot_vector = torch.LongTensor([center_word_idx])
         embeddings = self.embeddings(onehot_vector)
         logits = self.out_layer(embeddings) / self.temperature
@@ -29,9 +29,9 @@ class PetSkipGramModel(nn.Module, PetTokenizer):
         return log_probabilities
     
     def fit(self, word) -> str:
-        token = self.word_idx_dict[word]
-        
-        if token < 0:
+        if word in self.word_idx_dict.keys():
+            token = self.word_idx_dict[word]
+        else:
             return "#oov"
         
         onehot_vector = torch.LongTensor([token])

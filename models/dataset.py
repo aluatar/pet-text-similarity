@@ -33,7 +33,11 @@ class WordToVecDataset(Dataset):
     def get_pairs(self):
         for i in range(self.text.text_length):
             for j in range(max(0, i - self.window_size), min(self.text.text_length, i + self.window_size + 1)):
-                if i != j:
+                if (
+                    i != j
+                    and self.text.words[i] in self.word_idx_dict.keys()
+                    and self.text.words[j] in self.word_idx_dict.keys()
+                ):
                     self.data.append((
                         self.word_idx_dict.get(self.text.words[i]),
                         self.word_idx_dict.get(self.text.words[j])
