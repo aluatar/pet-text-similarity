@@ -1,1 +1,1 @@
-# pet-text-similarity
+# Pet R&D for ML text similarity engine

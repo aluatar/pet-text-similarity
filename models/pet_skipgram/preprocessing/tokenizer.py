@@ -1,7 +1,3 @@
-import torch
-import tokenizers
-from abc import ABCMeta
-from numba import jit
 from numpy import unique
 
 class PetTokenizer:

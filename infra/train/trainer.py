@@ -1,10 +1,7 @@
-import numpy as np
-import pandas as pd
 import torch
 from tqdm import tqdm
 
 from torch.utils.data import DataLoader
-from torch import nn
 from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
 
@@ -30,11 +27,13 @@ class PetSkipGramTrainer:
         self.batch_size = batch_size 
         self.shuffle = shuffle 
         self.epoches = epoches
+        self.device = self.model.device
               
         self.train_dataloader = DataLoader(
             dataset=training_data,
             batch_size=self.batch_size,
-            shuffle=self.shuffle
+            shuffle=self.shuffle, 
+            
         )
         if validation_data is not None:
             self.validation_dataloader = DataLoader(
@@ -49,12 +48,14 @@ class PetSkipGramTrainer:
             
     
     def train(self):
+        self.model.to(self.device)
+        self.train_dataloader
         for epoch in range(self.epoches):
             loss = 0
             for center_word, context_word in tqdm(self.train_dataloader):
                 self.model.zero_grad()
                 log_probabilities = self.model.forward(center_word)
-                _loss = self.loss(log_probabilities, context_word)
+                _loss = self.loss(log_probabilities.cpu(), context_word)
                 _loss.backward()
                 self.optimizer.step()
                 

@@ -3,10 +3,18 @@ from torch import nn
 from .preprocessing.tokenizer import PetTokenizer
 from numpy.random import choice
 import numpy as np
+from typing import Literal
 
 class PetSkipGramModel(nn.Module, PetTokenizer):
     
-    def __init__(self, vocabulary: list[str], embedding_dim: int | None=50, n_samples: int | None = 100, temerature: float | None = 1.0):
+    def __init__(
+        self, 
+        vocabulary: list[str], 
+        embedding_dim: int | None=50, 
+        n_samples: int | None = 100, 
+        temerature: float | None = 1.0,
+        device: Literal['cuda' , 'cpu'] | None='cuda'
+    ):
         nn.Module.__init__(self)
         PetTokenizer.__init__(self, vocabulary=vocabulary)
         self.embedding_dim = embedding_dim
@@ -20,9 +28,20 @@ class PetSkipGramModel(nn.Module, PetTokenizer):
         self.n_samples = n_samples
         self.temperature = temerature
         self.word_embedding_dict = {}
+        if device is not None:
+            self.device = device
+        if torch.cuda.is_available() and device == 'cuda':
+            self.device = 'cuda'
+            print(f"Model passed to CUDA device {torch.cuda.get_device_name()}")
+        elif torch.cuda.is_available() and device == 'cpu':
+            self.device = 'cpu'
+            print(f"Device manually set to 'cpu' while CUDA device {torch.cuda.get_device_name()} is avalible. Consider switching to CUDA for better efficiency.")
+        else:
+            self.device = 'cpu'
+            print("CUDA device is not avalible. Switching to CPU")
         
     def forward(self, center_word_idx):
-        onehot_vector = torch.LongTensor([center_word_idx])
+        onehot_vector = torch.LongTensor([center_word_idx]).to(device=self.device)
         embeddings = self.embeddings(onehot_vector)
         logits = self.out_layer(embeddings) / self.temperature
         log_probabilities = self.activation_function(logits)
